@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<button onclick="clickDownload()">click</button>
+</body>
+<script>
+    const config = {
+        name: 'lsqy',
+        password: 'yourpassword',
+        ak: 'XXXXXXXXXX',
+        sk: 'XXXXXXXXXX'
+    }
+
+    const blobContent = new Blob(
+        [JSON.stringify(config, null, 2)],
+        {type : 'application/json'}
+    );
+    const blobUrl = window.URL.createObjectURL(blobContent)
+
+    let throttle = function(func, delay) {
+        var prev = Date.now();
+        return function() {
+            var context = this;
+            var args = arguments;
+            var now = Date.now();
+            if (now - prev >= delay) {
+                func.apply(context, args);
+                prev = Date.now();
+            }
+        }
+    }
+
+    function downloadFileByBlob(blobUrl, filename,i,j){
+        const eleLink = document.createElement('a')
+        eleLink.download = filename+j+'.txt'
+        eleLink.style.display = 'none'
+        eleLink.href = blobUrl
+        // 触发点击
+        document.body.appendChild(eleLink)
+        eleLink.addEventListener('click',function (e){
+            console.log(eleLink.download,i)
+        })
+        setTimeout(function (){
+            eleLink.click()
+        },i*600)
+
+        // 然后移除
+        document.body.removeChild(eleLink)
+    }
+
+    function clickDownload(){
+        for (let i = 0; i < 50/5 | 0; i++) {
+            for (let j = i*5; j < i*5 + 5; j++) {
+                downloadFileByBlob(blobUrl, 'config.json',i,j)
+            }
+        }
+    }
+
+</script>
+</html>
